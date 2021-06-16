@@ -96,7 +96,7 @@ namespace API {
 }
 
 const API_ENDPOINT = "https://calirdr.usedirect.com/rdr/rdr/search/grid";
-const API_DATE_FORMAT = "M-d-yyyy";
+const API_DATE_FORMAT = "yyyy-M-d";
 
 class Campground implements ICampground {
   constructor(private data: API.Facility) {}
@@ -107,9 +107,11 @@ class Campground implements ICampground {
 }
 
 export async function getCampground(campgroundId: string): Promise<Campground | null> {
-  const request = { FacilityId: Number.parseInt(campgroundId), StartDate: "7-1-2020", EndDate: "7-2-2020" };
+  const request = { FacilityId: Number.parseInt(campgroundId), StartDate: "1-1-2021", EndDate: "7-2-2025" };
+  
   try {
     const response = await makePostRequest<API.GridResponse>(API_ENDPOINT, request);
+
     return response.data.Facility ? new Campground(response.data.Facility) : null;
   } catch (e) {
     return null;
@@ -143,14 +145,18 @@ export async function getCampsites(
 ): Promise<Campsite[]> {
   const start = DateTime.local().startOf("day");
   const end = start.plus({ months: monthsToCheck });
-
   const request = {
     FacilityId: campgroundId,
     StartDate: start.toFormat(API_DATE_FORMAT),
     EndDate: end.toFormat(API_DATE_FORMAT),
   };
 
+  console.log("StartDate", request.StartDate)
+  console.log("EndDate",request.EndDate)
+  console.log(API_ENDPOINT);
+  
   const response = await makePostRequest<API.GridResponse>(API_ENDPOINT, request);
-
+  console.log(response.request);
+  
   return Object.values(response.data.Facility.Units).map((data) => new Campsite(data as API.Unit));
 }

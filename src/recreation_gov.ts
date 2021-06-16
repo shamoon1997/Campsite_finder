@@ -54,10 +54,16 @@ namespace API {
     Overnight = "Overnight",
   }
 }
+function replaceAt(str : any, index : any , ch : any) {
+  return str.replace(/./g, (c : any, i : any) => i == index ? ch : c);
+}
 
 function buildCampsiteURL(campgroundId: string, startDate: DateTime) {
   const adjustedStartDate = startDate.toUTC().startOf("day").toISO();
-  const encodedStartDate = encodeURIComponent(adjustedStartDate);
+  let encodedStartDate = encodeURIComponent(adjustedStartDate);
+  encodedStartDate=replaceAt(encodedStartDate,8,"0")
+  encodedStartDate=replaceAt(encodedStartDate,9,"1")
+  
   return `https://www.recreation.gov/api/camps/availability/campground/${campgroundId}/month?start_date=${encodedStartDate}`;
 }
 
@@ -109,12 +115,12 @@ export async function getCampsites(
   monthsToCheck: number
 ): Promise<Campsite[]> {
   const result: Campsite[] = [];
+  
 
   for (let deltaMonth = 0; deltaMonth < monthsToCheck; deltaMonth += 1) {
-    const searchStart = DateTime.local().startOf("month").plus({ month: deltaMonth });
-
-    const url = buildCampsiteURL(campgroundId, searchStart);
-    const response = await makeGetRequest(url);
+     const searchStart = DateTime.local().startOf("month").plus({ month: deltaMonth });
+     const url = buildCampsiteURL(campgroundId, searchStart);
+     const response = await makeGetRequest(url);
 
     const campsites: Campsite[] = Object.values(response.data.campsites).map(
       (data) => new Campsite(data as API.Campsite)

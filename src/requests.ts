@@ -10,6 +10,7 @@ export async function makeGetRequest(url: string) {
 }
 
 export async function makePostRequest<T>(url: string, data: any) {
+  console.log("data ",data)
   return await axios.post<T>(url, data, {
     headers: {
       "User-Agent": fakeUa(),

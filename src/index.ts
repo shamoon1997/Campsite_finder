@@ -111,11 +111,12 @@ async function doTheThing(
   console.log(
     `Checking for sites at ${campground.getName()} available on a ${weekdayToDay(
       startDayOfWeek
-    )} for ${lengthOfStay} ${lengthOfStay === 1 ? "night" : "nights"}.`
+    )} for ${lengthOfStay} ${lengthOfStay === 1 ? "night" : "nightsssss"}.`
   );
-  console.log();
 
   const campsites = await api.getCampsites(campgroundId, monthsToCheck);
+  // console.log("monthToCheck",monthsToCheck);
+  
 
   const matches = campsites
     .map((site) => {
@@ -131,12 +132,13 @@ async function doTheThing(
   if (regrouped.length > 0) {
     const length = regrouped.length;
     console.log(`Found ${length} matching ${length === 1 ? "itinerary" : "itineraries"}:`);
-    console.log();
+    //console.log();
     regrouped.forEach(({ range, campsites }) => {
       const { start, end } = range;
       const diff = Math.round(start.diffNow("week").as("weeks"));
-      console.log(`${formatRange(start, end)} (in ${diff} ${diff === 1 ? "week" : "weeks"}):`);
-
+      console.log(`${formatRange(start, end)} (in ${diff} ${diff === 1 ? "week" : "weeks"}):`)
+      //console.log(monthsToCheck)
+      
       campsites.forEach((site) => {
         console.log(`- ${site.getName()} ${site.getUrl()}`);
       });
@@ -165,8 +167,10 @@ function pickAPI(choice: APIChoice) {
 
 async function main(argv: Argv) {
   try {
-    const api = pickAPI(argv.api);
+     const api = pickAPI(argv.api);
     await doTheThing(api, argv.campground, dayToWeekday(argv.day), argv.nights, argv.months);
+    // console.log("argv.months",argv.months);
+    
   } catch (e) {
     console.error(e.message);
     process.exit(1);
